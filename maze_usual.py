@@ -13,7 +13,7 @@ def find_paths(map, start_symbol, end_symbol):
         directions = [(1, 0), (-1, 0), (0, 1), (0, -1)]
         for dx, dy in directions:
             new_x, new_y = x + dx, y + dy
-            if 0 <= new_x < len(map) and 0 <= new_y < len(map[0]) and map[new_x][new_y] != '#':
+            if 0 <= new_x < len(map) and 0 <= new_y < len(map[0]) and map[new_x][new_y] != '#' and map[new_x][new_y] != ' ':
                 neighbors.append((new_x, new_y))
         return neighbors
 
