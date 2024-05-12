@@ -57,3 +57,10 @@ def find_paths(map, start_symbol, end_symbol):
     found_path = False
     path = find_path(root)
     return f"Solution: {path}"
+
+def read_file(filename):
+    with open(filename, "r", encoding="utf-8") as file:
+        data = file.readlines()
+        data = [i.replace("\n", "") for i in data]
+    return data
+
