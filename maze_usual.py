@@ -1,3 +1,6 @@
+import pygame
+import sys
+import time
 class TreeNode:
     def __init__(self, position, parent=None):
         self.position = position
@@ -24,7 +27,6 @@ def find_paths(map, start_symbol, end_symbol):
                 child_node = TreeNode(neighbor, parent_node)
                 parent_node.add_child(child_node)
                 build_tree(child_node, neighbor)
-
     start_position = None
     end_position = None
     for i, row in enumerate(map):
@@ -35,12 +37,11 @@ def find_paths(map, start_symbol, end_symbol):
                 end_position = (i, j)
     if start_position is None or end_position is None:
         return "Start or End Point was not found!"
-
     visited = set()
     root = TreeNode(start_position)
     visited.add(start_position)
     build_tree(root, start_position)
-
+    
     def find_path(node, path=[]):
         path.append(node.position)
         if node.position == end_position:
@@ -56,7 +57,8 @@ def find_paths(map, start_symbol, end_symbol):
 
     found_path = False
     path = find_path(root)
-    return f"Solution: {path}"
+    print("Solution:")
+    return path
 
 def read_file(filename):
     with open(filename, "r", encoding="utf-8") as file:
@@ -64,3 +66,49 @@ def read_file(filename):
         data = [i.replace("\n", "") for i in data]
     return data
 
+#VIZUALISATION
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
+BLUE = (175, 238, 238)
+GREY = (211, 211, 211)
+GREEN = (107, 142, 35)
+
+def draw_grid(screen, maze, cell_size):
+    for row in range(len(maze)):
+        for column in range(len(maze[0])):
+            if maze[row][column] == "." or maze[row][column] == " ":
+                color = WHITE
+            elif maze[row][column] == "#":
+                color = BLACK
+            pygame.draw.rect(screen, color, [column * cell_size, row * cell_size, cell_size, cell_size])
+
+def draw_path(screen, path, cell_size):
+    for coord in path:
+        row, col = coord
+        pygame.draw.rect(screen, GREEN, [col * cell_size, row * cell_size, cell_size, cell_size])
+        pygame.display.flip()
+        time.sleep(0.1 * (30 / len(path)))  # Dynamic delay based on maze size
+
+def solve_maze(maze, path):
+    pygame.init()
+    maze_size = max(len(maze), len(maze[0]))
+    window_size = min(700, 700 // maze_size * maze_size)  # Calculate window size
+    cell_size = window_size // maze_size  # Calculate cell size
+    screen = pygame.display.set_mode((window_size, window_size))
+    pygame.display.set_caption("Maze Solver")
+    clock = pygame.time.Clock()
+    done = False
+    while not done:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                done = True
+        screen.fill(WHITE)
+        draw_grid(screen, maze, cell_size)
+        draw_path(screen, path, cell_size)
+        pygame.display.flip()
+        clock.tick(10)
+    pygame.quit()
+
+maze = read_file("test_cases_simple/10.txt")
+path = find_paths(read_file("test_cases_simple/10.txt"), "?", "!")
+solve_maze(maze, path)
