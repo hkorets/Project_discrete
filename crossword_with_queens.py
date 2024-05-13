@@ -11,16 +11,16 @@ def is_safe(board, row, col, n):
     return True
 
 
-def solve_n_queens(board, col, n, queens_to_place):
+def solve_n_queens(board, col, n, queens_to_place, solutions):
     if queens_to_place == 0:
-        return True
+        solutions.append([row[:] for row in board])
+        return
     for i in range(n):
         if is_safe(board, i, col, n):
             board[i][col] = 1
-            if solve_n_queens(board, col + 1, n, queens_to_place - 1):
-                return True
+            solve_n_queens(board, col + 1, n, queens_to_place - 1, solutions)
             board[i][col] = 0
-    return False
+
 
 
 def print_board(board):
@@ -35,11 +35,20 @@ def print_board(board):
 
 def place_queens(n, queens_to_place):
     board = [[0 for _ in range(n)] for _ in range(n)]
-    if not solve_n_queens(board, 0, n, queens_to_place):
+    solutions = []
+    solve_n_queens(board, 0, n, queens_to_place, solutions)
+    if not solutions:
         return "неможливо розставити королеви"
-    print_board(board)
+    return solutions
 
 
-board_size = int(input("розмір поля: "))
-queens_to_place = int(input("кількість королев: "))
-print(place_queens(board_size, queens_to_place))
+board_size = 8
+queens_to_place = 8
+result = place_queens(board_size, queens_to_place)
+if isinstance(result, str):
+    print(result)
+else:
+    for i, solution in enumerate(result, 1):
+        print(f"Варіант {i}:")
+        print_board(solution)
+        print()
